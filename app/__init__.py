@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import os
 from flask_mail import Mail, Message
+
 # from .models import *
 
 app = Flask(__name__)

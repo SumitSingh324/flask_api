@@ -11,6 +11,8 @@ from app import mail
 from flask_mail import Message
 import threading
 from flask import current_app
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 
 user_bp = Blueprint('users',__name__)
 
@@ -19,6 +21,8 @@ bcrypt = Bcrypt(app)
 # @user_bp.route("/",methods=['GET','POST'])
 # def index():
 #     return "Hello"
+
+jwt = JWTManager(app)
 
 def validate_user_data(data):
     email = data.get("email")
@@ -128,5 +132,34 @@ class Hello(Resource):
             else:
                 return jsonify({'error':'Please updated proper field'})
 
+class LoginView(Resource):
+    def post(self):
+        breakpoint()
+        data = request.get_json()
+        username = data['username']
+        password = data['password_hash']
+        print('Received data:', username , password)
+
+        user = User.query.filter_by(username=username).first()
+
+        if user and bcrypt.check_password_hash(user.password_hash, password):
+            access_token = create_access_token(identity=user.id)
+            return jsonify({'message': 'Login Success', 'access_token': access_token})
+        else:
+            return jsonify({'message': 'Login Failed'}), 401
+
+    @jwt_required()
+    def get(self):
+        breakpoint()
+        user_id = get_jwt_identity()
+        user = User.query.filter_by(id=user_id).first()
+        if user:
+            return jsonify({'message': 'User found', 'name': user.name})
+        else:
+            return jsonify({'message': 'User not found'}), 404
+
+
+
             
 api.add_resource(Hello,"/","/<int:id>", methods=['GET','POST','DELETE','PUT'])
+api.add_resource(LoginView,"/login","/home",methods=['POST','GET'])
