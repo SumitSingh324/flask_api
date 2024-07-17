@@ -150,7 +150,6 @@ class LoginView(Resource):
 
     @jwt_required()
     def get(self):
-        breakpoint()
         user_id = get_jwt_identity()
         user = User.query.filter_by(id=user_id).first()
         if user:
