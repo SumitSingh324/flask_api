@@ -134,7 +134,6 @@ class Hello(Resource):
 
 class LoginView(Resource):
     def post(self):
-        breakpoint()
         data = request.get_json()
         username = data['username']
         password = data['password_hash']
