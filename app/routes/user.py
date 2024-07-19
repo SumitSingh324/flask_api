@@ -181,7 +181,6 @@ class ResetPassword(Resource):
     
     @jwt_required()
     def post(self):
-        breakpoint()
         data = request.get_json()
         password = data.get('password_hash')
         user_id = get_jwt_identity()
