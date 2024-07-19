@@ -101,7 +101,6 @@ class Hello(Resource):
 
 
     def delete(self,id):
-        # breakpoint()
         user = User.query.filter_by(id=id).first()
         if user:
             db.session.delete(user)
@@ -111,7 +110,6 @@ class Hello(Resource):
             return jsonify({'msg':'User is not Present'})
 
     def put(self,id):
-        # breakpoint()
         data = request.get_json()
         user = User.query.filter_by(id=id).first()
         if user:
