@@ -166,7 +166,7 @@ class LoginView(Resource):
             access_token = create_access_token(identity=user.id)
             return jsonify({'message': 'Login Success', 'access_token': access_token})
         else:
-            return jsonify({'message': 'Login Failed'}), 401
+            return jsonify({'message': 'Login Failed'})
 
     @jwt_required()
     def get(self):
@@ -177,8 +177,21 @@ class LoginView(Resource):
         else:
             return jsonify({'message': 'User not found'}), 404
 
+class ResetPassword(Resource):
+    
+    @jwt_required()
+    def post(self):
+        breakpoint()
+        data = request.get_json()
+        password = data.get('password_hash')
+        user_id = get_jwt_identity()
+        user = User.query.filter_by(id=user_id).first()
+        user.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+        db.session.commit()
+        return jsonify({'success':'Password Updated Successfully'})
 
 
             
 api.add_resource(Hello,"/","/<int:id>", methods=['GET','POST','DELETE','PUT'])
 api.add_resource(LoginView,"/login","/home",methods=['POST','GET'])
+api.add_resource(ResetPassword,"/reset",methods=['POST'])
