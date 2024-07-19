@@ -53,7 +53,6 @@ def validate_user_data(data):
     
 
 def send_mail(email):
-    # breakpoint()
     msg = Message(
         'Hello', 
         sender ='manish@thoughtwin.com', 
