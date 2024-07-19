@@ -84,7 +84,6 @@ class Hello(Resource):
 
     def post(self):
         data = request.get_json()
-        # breakpoint()
         validation_error = validate_user_data(data)
         if validation_error:
             return jsonify(validation_error)
