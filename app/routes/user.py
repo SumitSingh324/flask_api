@@ -84,7 +84,6 @@ class Hello(Resource):
 
     def post(self):
         data = request.get_json()
-        # breakpoint()
         validation_error = validate_user_data(data)
         if validation_error:
             return jsonify(validation_error)
@@ -103,7 +102,6 @@ class Hello(Resource):
 
 
     def delete(self,id):
-        # breakpoint()
         user = User.query.filter_by(id=id).first()
         if user:
             db.session.delete(user)
@@ -113,24 +111,48 @@ class Hello(Resource):
             return jsonify({'msg':'User is not Present'})
 
     def put(self,id):
-        # breakpoint()
         data = request.get_json()
         user = User.query.filter_by(id=id).first()
         if user:
             if 'username' in data:
-                user.username = data['username']
-                db.session.commit()
+                username = data.get("username")
+                if User.query.filter_by(username=username).first():
+                    return jsonify({'error':'Username is alredy Present'})
+                if len(str(username)) <= 4 or str(username).strip() == "":
+                    return jsonify({'error':'Username must contain atleast five characters'})
+                if username is None or username != str(username):
+                    return jsonify({'error':'Please enter a valid username'})
+                else:
+                    user.username = data['username']
+                    db.session.commit()
                 return jsonify({'data':'updated'})
             if 'email' in data:
-                user.email = data['email']
-                db.session.commit()
+                email = data.get('email')
+                if email is None:
+                    return {'Error': 'Please enter your email'}
+                if email!=str(email):
+                    return jsonify({'error':'Please eneter proper format of email'})
+                regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+                if not re.fullmatch(regex, email):
+                    return {'Error': 'Please enter a valid email'}
+                else:
+                    user.email = data['email']
+                    db.session.commit()
                 return jsonify({'data':'updated'})
             if 'name' in data:
-                user.name = data['name']
-                db.session.commit()
+                name = data.get('name')
+                if name is None:
+                    return jsonify({'error':'Please enter a name'})
+                if name != str(name):
+                    return jsonify({'error':'Please enter a name'})
+                else:
+                    user.name = data['name']
+                    db.session.commit()
                 return jsonify({'data':'updated'})
             else:
                 return jsonify({'error':'Please updated proper field'})
+
+   
 
 class LoginView(Resource):
     def post(self):
